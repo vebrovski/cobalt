@@ -1,0 +1,4 @@
+cobalt
+======
+
+MintJoomla Cobalt
