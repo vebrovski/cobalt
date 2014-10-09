@@ -83,13 +83,13 @@ Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and
 
 #### What about $item->votes_result
 
-Above we were talking about TOTAL RATING (ratings from all reviews of one record). `$item->votes_result` is still useful for displaying result of SINGLE review. So if we are Content-T record which has comments bellow we can use `$item->votes_result` in foreach cycle for every list item. Let's say this is like field result. You can also use this in full comment view.
+Above we were talking about TOTAL RATING (ratings from all reviews of one record). `$item->votes_result` is still useful for displaying result of SINGLE review. So for comments bellow record we can use `$item->votes_result` in foreach cycle for every list item. Let's say this is like field result. You can also use this in full comment view.
 
 Example: `<?php echo $item->votes_result; ?>`
 
 #### Show parent record in review
 
-If you are in your Content-T record you can see reviews under record. But if you go to list view of all comments or in comment full view you don't see which record was reviewd with this comment. You can simply fix this by adding
+If you are in your Content-T record you can see reviews under record. But if you go to list view of all comments or in comment full view you don't see which record was reviewed with this comment. You can simply fix this by adding
 ```
 <?php
 $parent = ItemsStore::getRecord($item->parent_id);
@@ -98,7 +98,53 @@ echo '<a href="'.JRoute::_(Url::record($parent->id)).'">'.$parent->title.'</a>';
 ```
 
 ### Reply to comments rating
-Work in progress...
+
+This is tricky with core Cobalt since it doesn't have this deep integration for Cobalt - Types as comments. You can hack core if you want. I think `com_cobalt/views/record/tmpl/default_comments.php` is the file you are looking for.
+
+But there is a kind of workaround with **Built in comments**. I will be making example for 1 reply only (just like JED has).
+
+1. Go edit your Comment-T and click on *Comments Parameters* tab.
+2. In *Comments provider* choose *Cobalt - Built in comments*.
+3. I think there should be only one reply so you need to select *Yes* under *Require admin approvement*. This way you as admin must approve replies before they are visible. If there are many replies added you can just ignore them or delete them.
+4. Configure other parameters to suit your needs.
+
+To be able to add replies under list view in record you can insert this code:
+```
+<a href="<?php echo JRoute::_($item->url);?>">
+  <?php echo JText::_('C_REVIEW_REPLY_LINK'); ?>
+</a>
+```
+This will include link to full view comment and under comment you have button Add.
+
+Now you will have to display replies under list view in record. Yo can do this with:
+```
+<?php
+db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$query->select('comment');
+$query->from($db->quoteName('#__js_res_comments'));
+$query->where('record_id = '.$item->id); 
+$db->setQuery($query);
+$review_reply = $db->loadObjectList();
+foreach($review_reply as $reply) { 
+	echo $reply->comment;
+};
+?>
+```
+
+This is not so great solution because:
+* reply link is always displayed (even if you add one reply there is still this link instead it should auto turn off),
+* everybody can reply, it's up to you as admin to control those replies (limit reply for specific access level and only main record author would be in place),
+* you can't add reply directly in comments list underneath record. It first redirects you to comment record.
+
+Some of this can also be achieved with **Cobalt - Types as comments**. For displaying replies with Cobalt - Types as comments in comments list view you can use something like:
+```
+<?php 
+echo CommentHelper::listComments($this->submission_types[$item->type_id], $item); 
+echo JHtml::_('content.prepare', $comment);
+?
+```>
+
 
 ## Cobalt - Built in comments
 Work in progress...
