@@ -142,8 +142,8 @@ Some of this can also be achieved with **Cobalt - Types as comments**. For displ
 <?php 
 echo CommentHelper::listComments($this->submission_types[$item->type_id], $item); 
 echo JHtml::_('content.prepare', $comment);
-?
-```>
+?>
+```
 
 
 ## Cobalt - Built in comments
