@@ -49,7 +49,7 @@ In Cobalt documentation we have this API `$rating = CobaltApi::renderRating($typ
 
 Another thing you should concider is to add another condition to your ratings and that is `r.parent_id`. This means that only ratings of current article wil be calculated.
 
-**Here are examples for different remplates:**
+**Here are examples for different templates:**
 
 I'll just make up ID's:
 * Comment type (Comment-T) ID is 2.
@@ -95,5 +95,10 @@ If you are in your Content-T record you can see reviews under record. But if you
 $parent = ItemsStore::getRecord($item->parent_id);
 echo '<a href="'.JRoute::_(Url::record($parent->id)).'">'.$parent->title.'</a>';
 ?>
+```
 
-### Reply to comments
+### Reply to comments rating
+Work in progress...
+
+## Cobalt - Built in comments
+Work in progress...
