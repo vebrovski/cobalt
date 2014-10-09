@@ -39,7 +39,7 @@ Now let's see how we will display rating, total rating and votes. We can use:
 * `$rating['total']` for total rating result.
 
 The difference between 1st two and 2nd two is in additional queries. `$rating` method adds one additional query which is OK for full record view but not so for list view.
-The difference may also exists in case you have approve system for reviews. `$rating['total']` contains total of all published articles. `$item->votes_result` contain all articles including unpublished.
+The difference may also exists in case you have approve system for reviews. `$rating['total']` contains total of all published articles. `$item->votes_result` contain all articles including unpublished. Also when using `$item->votes_result` and you delete review rating is not recalculated.
 
 So in my experience for proper total rating and total votes all accross site you should use `$rating`. Let's se how to do this.
 
@@ -71,7 +71,29 @@ I'll just make up ID's:
 
 This 2 examples are the same apart from conditions. In 1st example we use `r.parent_id = '.$item->id` because we are in Content-T full record view. `r.parent_id = '.$item->parent_id` because we are in Comment-S list view.
 
+*List view (Content-S). In other words list view of your content records*
+
+```
+<?php $rating = CobaltApi::renderRating(13, 8, 'r.published = 1 AND r.parent_id = '.$item->id); ?> 
+<?php $rating['total'];?>
+```
+
 Rating will be shown as number from 0-100. You can always change this with php. 
-Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and rounds up number by 0,1. 
+Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and rounds up number by 0,1.
+
+#### What about $item->votes_result
+
+Above we were talking about TOTAL RATING (ratings from all reviews of one record). `$item->votes_result` is still useful for displaying result of SINGLE review. So if we are Content-T record which has comments bellow we can use `$item->votes_result` in foreach cycle for every list item. Let's say this is like field result. You can also use this in full comment view.
+
+Example: `<?php echo $item->votes_result; ?>`
+
+#### Show parent record in review
+
+If you are in your Content-T record you can see reviews under record. But if you go to list view of all comments or in comment full view you don't see which record was reviewd with this comment. You can simply fix this by adding
+```
+<?php
+$parent = ItemsStore::getRecord($item->parent_id);
+echo '<a href="'.JRoute::_(Url::record($parent->id)).'">'.$parent->title.'</a>';
+?>
 
 ### Reply to comments
