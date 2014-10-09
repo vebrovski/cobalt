@@ -36,14 +36,40 @@ Now let's see how we will display rating, total rating and votes. We can use:
 * `$item->votes` for number of votes,
 * `$item->votes_result` for rating result,
 * `$rating['num']` for number of votes,
-* `$rating['total']` for rating result.
+* `$rating['total']` for total rating result.
 
 The difference between 1st two and 2nd two is in additional queries. `$rating` method adds one additional query which is OK for full record view but not so for list view.
 The difference may also exists in case you have approve system for reviews. `$rating['total']` contains total of all published articles. `$item->votes_result` contain all articles including unpublished.
 
-So in my experience for proper rating all accross site you should use `$rating`. Let's se how to do this.
+So in my experience for proper total rating and total votes all accross site you should use `$rating`. Let's se how to do this.
+
+#### Total rating
 
 In Cobalt documentation we have this API `$rating = CobaltApi::renderRating($type_id, $section_id, $condition);` where `$type_id` is ID of content type (Comment-T), `$section_id` is ID of section (Comment-S) and `$condition` are simply conditions for showing rating. I think that there should be at least one condition applied and that's `r.published = 1`. This will take into account only published ratings. `r` stands for `js_res_records` table.
+
+Another thing you should concider is to add another condition to your ratings and that is `r.parent_id`. This means that only ratings of current article wil be calculated.
+
+**Here are examples for different remplates:**
+
+I'll just make up ID's:
+* Comment type (Comment-T) ID is 2.
+* Comment section (Comment-S) ID is 2.
+
+*Full record view (Content-T)*
+```
+<?php $rating = CobaltApi::renderRating(2, 2, 'r.published = 1 AND r.parent_id = '.$item->id); ?>
+<?php echo $rating['total'];?>
+<?php echo $rating['num'];?>
+```
+
+*List view (Comment-S) in Full record view (Content-T). In other words template to show list of comments under aticle.*
+```
+<?php $rating = CobaltApi::renderRating(2, 2, 'r.published = 1 AND r.parent_id = '.$item->parent_id); ?>
+<?php echo $rating['total'];?>
+<?php echo $rating['num']; ?>
+```
+
+This 2 examples are the same apart from conditions. In 1st example we use `r.parent_id = '.$item->id` because we are in Content-T full record view. `r.parent_id = '.$item->parent_id` because we are in Comment-S list view.
 
 Rating will be shown as number from 0-100. You can always change this with php. 
 Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and rounds up number by 0,1. 
