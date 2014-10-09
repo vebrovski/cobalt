@@ -20,13 +20,16 @@ I will write here just how to add comments with reviews and different tricks and
 4. In *Comments provider* choose *Cobalt - Types as comments*.
 5. *Select section* to store comments (Comment-S), *Content type* (Comment-T) and *Force category* if you want. Purpose of *Force category* is to store comments in section category instead of section root. Remember to check *Submission paramaters* tab in your type (Content-T) and under *Categories Behaviour* you have *Allow root submission*. If you don't have subcategories in your Comment-S than this should be set to Yes.
 
-For now I won't be covering other paramaters since they are pretty straightforward.
+For now I won't be covering other parameters since they are pretty straightforward.
 
-Once you set up your Comments Parameters usesr will be able to add comments under your Content-T record.
+Once you set up your Comments Parameters users will be able to add comments under your Content-T record.
 
 
 ### Comments rating (reviews)
 
-1. Go edit your Comment-T.
+1. Go edit your type Comment-T.
+2. Under *General Parameters -> Templates -> Rating* select your rating template. This is used for clicking icons when you submit your rating (ex. 1-5). You can see how they look in administrator under Cobalt -> Templates -> Ratings. You can also copy template or make your own. Ratings template files are in `components/com_cobalt/views/rating_tmpls`.
+3. Stay on the same parameters tab and see parameters under *Rating*. If you are doing reviews choose *Only article author* under *Who can rate* because you don't want your Content-T author to review his own record.
+4. Stay on the same tab. If you want to use multiple rating options set *Yes* in *Enable multiple ratings* and write down options under *Multiple rating options*. Write down one option on each line. Multiple rating is useful if you want to rate for ex. restaurant service and you want your users to be able to rate food, service, value, atmosphere...
 
 ### Reply to comments
