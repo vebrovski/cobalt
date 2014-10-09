@@ -32,4 +32,20 @@ Once you set up your Comments Parameters users will be able to add comments unde
 3. Stay on the same parameters tab and see parameters under *Rating*. If you are doing reviews choose *Only article author* under *Who can rate* because you don't want your Content-T author to review his own record.
 4. Stay on the same tab. If you want to use multiple rating options set *Yes* in *Enable multiple ratings* and write down options under *Multiple rating options*. Write down one option on each line. Multiple rating is useful if you want to rate for ex. restaurant service and you want your users to be able to rate food, service, value, atmosphere...
 
+Now let's see how we will display rating, total rating and votes. We can use:
+* `$item->votes` for number of votes,
+* `$item->votes_result` for rating result,
+* `$rating['num']` for number of votes,
+* `$rating['total']` for rating result.
+
+The difference between 1st two and 2nd two is in additional queries. `$rating` method adds one additional query which is OK for full record view but not so for list view.
+The difference may also exists in case you have approve system for reviews. `$rating['total']` contains total of all published articles. `$item->votes_result` contain all articles including unpublished.
+
+So in my experience for proper rating all accross site you should use `$rating`. Let's se how to do this.
+
+In Cobalt documentation we have this API `$rating = CobaltApi::renderRating($type_id, $section_id, $condition);` where `$type_id` is ID of content type (Comment-T), `$section_id` is ID of section (Comment-S) and `$condition` are simply conditions for showing rating. I think that there should be at least one condition applied and that's `r.published = 1`. This will take into account only published ratings. `r` stands for `js_res_records` table.
+
+Rating will be shown as number from 0-100. You can always change this with php. 
+Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and rounds up number by 0,1. 
+
 ### Reply to comments
