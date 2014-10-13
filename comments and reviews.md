@@ -64,7 +64,7 @@ I'll just make up ID's:
 <?php echo $rating['num'];?>
 ```
 
-*List view (Comment-S) in Full record view (Content-T). In other words template to show list of comments under aticle.*
+*List view (Comment-S) in Full record view (Content-T). In other words template to show list of comments under article.*
 ```
 <?php $rating = CobaltApi::renderRating(2, 2, 'r.published = 1 AND r.parent_id = '.$item->parent_id); ?>
 <?php echo $rating['total'];?>
