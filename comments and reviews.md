@@ -10,6 +10,8 @@ Please also read [API reference](http://docs.mintjoomla.com/en/cobalt/api-refere
 
 I will write here just how to add comments with reviews and different tricks and tips regarding this. I will not write other topics like creating content types, sections, fields etc.
 
+Thanks to Sergey (developer) for his outstanding support on the forum. Without him I couldn't have written this.
+
 ## Cobalt - Types as comments
 
 ### Enable comments
@@ -18,7 +20,7 @@ I will write here just how to add comments with reviews and different tricks and
 2. Set up another type (with fields) and section for your comments. We'll call them **Comment-T** and **Comment-S**. You can use Content-S subcategory to store comments but this type of setup can be tricky so I think it's best to store it in different section.
 3. Go edit your Content-T and click on *Comments Parameters* tab.
 4. In *Comments provider* choose *Cobalt - Types as comments*.
-5. *Select section* to store comments (Comment-S), *Content type* (Comment-T) and *Force category* if you want. Purpose of *Force category* is to store comments in section category instead of section root. Remember to check *Submission paramaters* tab in your type (Content-T) and under *Categories Behaviour* you have *Allow root submission*. If you don't have subcategories in your Comment-S than this should be set to Yes.
+5. *Select section* to store comments (Comment-S), *Content type* (Comment-T) and *Force category* if you want. Purpose of *Force category* is to store comments in section category instead of section root. Remember to check *Submission paramaters* tab in your type (Comment-T) and under *Categories Behaviour* you have *Allow root submission*. If you don't have subcategories in your Comment-S than this should be set to Yes.
 
 For now I won't be covering other parameters since they are pretty straightforward.
 
@@ -83,7 +85,7 @@ Ex. `<?php echo round($rating['total']/10, 1);?>` divides total rating by 10 and
 
 #### What about $item->votes_result
 
-Above we were talking about TOTAL RATING (ratings from all reviews of one record). `$item->votes_result` is still useful for displaying result of SINGLE review. So for comments bellow record we can use `$item->votes_result` in foreach cycle for every list item. Let's say this is like field result. You can also use this in full comment view.
+Above we were talking about TOTAL RATING (ratings from all reviews of one record). `$item->votes_result` is still useful for displaying result of SINGLE review. So for every comment bellow record or in section view we can use `$item->votes_result`.
 
 Example: `<?php echo $item->votes_result; ?>`
 
@@ -99,7 +101,7 @@ echo '<a href="'.JRoute::_(Url::record($parent->id)).'">'.$parent->title.'</a>';
 
 ### Reply to comments rating
 
-This is tricky with core Cobalt since it doesn't have this deep integration for Cobalt - Types as comments. You can hack core if you want. I think `com_cobalt/views/record/tmpl/default_comments.php` is the file you are looking for.
+This is tricky with core Cobalt since it doesn't have this deep integration for Cobalt - Types as comments. You can hack core if you want. I think `com_cobalt/views/record/tmpl/default_comments.php` is the file you are looking for. EDIT: see bellow Cobalt - Built in comments for Cobalt - Types as comments.
 
 But there is a kind of workaround with **Built in comments**. I will be making example for 1 reply only (just like JED has).
 
@@ -108,12 +110,20 @@ But there is a kind of workaround with **Built in comments**. I will be making e
 3. I think there should be only one reply so you need to select *Yes* under *Require admin approvement*. This way you as admin must approve replies before they are visible. If there are many replies added you can just ignore them or delete them.
 4. Configure other parameters to suit your needs.
 
-To be able to add replies under list view in record you can insert this code:
+To be able to add replies under list view in record you can insert this code (we will show reply to main record author from specific group:
 ```
-<a href="<?php echo JRoute::_($item->url);?>">
-  <?php echo JText::_('C_REVIEW_REPLY_LINK'); ?>
-</a>
+<?php
+$parent = ItemsStore::getRecord($item->parent_id);
+$user = JFactory::getUser();
+if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id ):
+?>
+	<a class="btn-primary btn-small pull-right" <?php echo $item->nofollow ? 'rel="nofollow"' : '';?> href="<?php echo JRoute::_($item->url);?>">
+		<?php echo JText::_('Reply'); ?>
+	</a>
+<?php endif; ?>
 ```
+where 10 is the group of user.
+
 This will include link to full view comment and under comment you have button Add.
 
 Now you will have to display replies under list view in record. Yo can do this with:
@@ -134,17 +144,30 @@ foreach($review_reply as $reply) {
 
 This is not so great solution because:
 * reply link is always displayed (even if you add one reply there is still this link instead it should auto turn off),
-* everybody can reply, it's up to you as admin to control those replies (limit reply for specific access level and only main record author would be in place),
 * you can't add reply directly in comments list underneath record. It first redirects you to comment record.
 
-Some of this can also be achieved with **Cobalt - Types as comments**. For displaying replies with Cobalt - Types as comments in comments list view you can use something like:
+
+Now let's see how to do it with **Cobalt - Types as comments**. For displaying replies with Cobalt - Types as comments in comments list view you can use something like:
 ```
 <?php 
 echo CommentHelper::listComments($this->submission_types[$item->type_id], $item); 
 echo JHtml::_('content.prepare', $comment);
 ?>
 ```
+I didn't use this because I just needed field value. I have used this solution. You place this in list template for your comments (1st level).
 
+```
+<?php
+$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$query = 'SELECT * FROM #__js_res_record WHERE parent_id = '.$item->id AND 'published = 1';
+$db->setQuery($query);
+$review_reply = $db->loadResult();
+if(isset($review_reply)):
+echo @CobaltApi::renderField($review_reply, 304, 'list'); //304 is field ID
+endif;
+?>
+```
 
 ## Cobalt - Built in comments
 Work in progress...
