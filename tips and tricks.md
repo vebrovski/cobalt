@@ -8,14 +8,6 @@ You can find markup template in *components/com_cobalt/views/records/tmpl/defaul
 
 #### Remove dropdown Switch view and change template labels to images with labels as tooltips
 
-So let's try do change this template from
-
-![Dropdown Switch view markup template](http://demo.web-er.si/markup_template_template_switcher_before.jpg)
-
-to something like
-
-![List Switch view with images markup template](http://demo.web-er.si/markup_template_template_switcher_after.jpg).
-
 Find default _ markup _ default.php make copy of it and change file name as you wish. Now find this code (around line 196):
 
 
