@@ -101,35 +101,65 @@ echo '<a href="'.JRoute::_(Url::record($parent->id)).'">'.$parent->title.'</a>';
 
 ### Reply to comments rating
 
-This is tricky with core Cobalt since it doesn't have this deep integration for Cobalt - Types as comments. You can hack core if you want. I think `com_cobalt/views/record/tmpl/default_comments.php` is the file you are looking for. EDIT: see bellow Cobalt - Built in comments for Cobalt - Types as comments.
+This is tricky with core Cobalt since it doesn't have this deep integration. You can hack core if you want. I think `com_cobalt/views/record/tmpl/default_comments.php` is the file you are looking for.
 
-But there is a kind of workaround with **Built in comments**. I will be making example for 1 reply only (just like JED has).
+But there is a kind of workaround. I will be making example for 1 reply only (just like JED has).
+
+#### Replies with Cobalt - Type as comment
 
 1. Go edit your Comment-T and click on *Comments Parameters* tab.
-2. In *Comments provider* choose *Cobalt - Built in comments*.
-3. I think there should be only one reply so you need to select *Yes* under *Require admin approvement*. This way you as admin must approve replies before they are visible. If there are many replies added you can just ignore them or delete them.
+2. In *Comments provider* choose *Cobalt - Types as comments*.
+3. I think there should be only one reply so you need to enter 1 *Yes* under *Limit per user article*. This way you as admin must approve replies before they are visible. If there are many replies added you can just ignore them or delete them.
 4. Configure other parameters to suit your needs.
 
-To be able to add replies under list view in record you can insert this code (we will show reply to main record author from specific group:
+To be able to add replies under list view in record you can insert this code (we will show reply button to main record author from specific group:
 ```
 <?php
+//start - show replies
+$db = JFactory::getDbo();
+$query = $db->getQuery(true);
+$query = 'SELECT * FROM #__js_res_record WHERE published = 1 AND parent_id = '.$item->id;
+$db->setQuery($query);
+$review_reply = $db->loadObject();
+
+if(isset($review_reply)) {
+	echo '<div class="row-fluid review-reply pull-left well well-small">';
+	echo '<h4 class="pull-left">' . "Owner's reply</h4><span>" . JText::sprintf('CONDATE', JHtml::_('date', $review_reply->ctime, $params->get('tmpl_core.item_time_format'))) . "</span>";
+	echo '<p>' . @CobaltApi::renderField($review_reply, 255, 'list') . '</p>'; //255 is field ID
+	echo '</div>';
+}
+//end - show replies
+
+//start - show reply button
 $parent = ItemsStore::getRecord($item->parent_id);
 $user = JFactory::getUser();
-if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id ):
+$url = 'index.php?option=com_cobalt&view=form&field_id=255&type_id=3&section_id=5&fand='.$item->id.'&parent_id='.$item->id.'&return='.Url::back(); //255 is field ID, 3 is type ID, 5 is section ID, you can insert category id with &cat_id=43 where category ID is 43
+
+if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id) { //10 is the group of user
+	if(@$review_reply->published = 1) {
+	echo '<a class="btn btn-primary btn-mini pull-right reply-link" rel="nofollow" href="' . JRoute::_($url) . '">' . JText::_('Reply') . '</a>';
+	}
+}
+//end - show reply button
 ?>
-	<a class="btn-primary btn-small pull-right" <?php echo $item->nofollow ? 'rel="nofollow"' : '';?> href="<?php echo JRoute::_($item->url);?>">
-		<?php echo JText::_('Reply'); ?>
-	</a>
-<?php endif; ?>
 ```
-where 10 is the group of user.
 
-This will include link to full view comment and under comment you have button Add.
+Upper code is where all mojo for replies happens. If you want to play a little bit you can also try include this code:
 
-Now you will have to display replies under list view in record. Yo can do this with:
 ```
-<?php
-db = JFactory::getDbo();
+<?php 
+echo CommentHelper::listComments($this->submission_types[$item->type_id], $item); 
+echo JHtml::_('content.prepare', $comment);
+?>
+```
+
+#### Replies with Cobalt - Built in comments
+
+You can also add replies with built in comments. This is something that might work (sorry, I didn't try it).
+
+```
+<?php //show comment as reply
+$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $query->select('comment');
 $query->from($db->quoteName('#__js_res_comments'));
@@ -137,35 +167,8 @@ $query->where('record_id = '.$item->id);
 $db->setQuery($query);
 $review_reply = $db->loadObjectList();
 foreach($review_reply as $reply) { 
-	echo $reply->comment;
+	echo $reply->reply;
 };
-?>
-```
-
-This is not so great solution because:
-* reply link is always displayed (even if you add one reply there is still this link instead it should auto turn off),
-* you can't add reply directly in comments list underneath record. It first redirects you to comment record.
-
-
-Now let's see how to do it with **Cobalt - Types as comments**. For displaying replies with Cobalt - Types as comments in comments list view you can use something like:
-```
-<?php 
-echo CommentHelper::listComments($this->submission_types[$item->type_id], $item); 
-echo JHtml::_('content.prepare', $comment);
-?>
-```
-I didn't use this because I just needed field value. I have used this solution. You place this in list template for your comments (1st level).
-
-```
-<?php
-$db = JFactory::getDbo();
-$query = $db->getQuery(true);
-$query = 'SELECT * FROM #__js_res_record WHERE parent_id = '.$item->id AND 'published = 1';
-$db->setQuery($query);
-$review_reply = $db->loadResult();
-if(isset($review_reply)):
-echo @CobaltApi::renderField($review_reply, 304, 'list'); //304 is field ID
-endif;
 ?>
 ```
 
