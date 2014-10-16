@@ -123,10 +123,8 @@ $db->setQuery($query);
 $review_reply = $db->loadObject();
 
 if(isset($review_reply)) {
-	echo '<div class="row-fluid review-reply pull-left well well-small">';
-	echo '<h4 class="pull-left">' . "Owner's reply</h4><span>" . JText::sprintf('CONDATE', JHtml::_('date', $review_reply->ctime, $params->get('tmpl_core.item_time_format'))) . "</span>";
-	echo '<p>' . @CobaltApi::renderField($review_reply, 255, 'list') . '</p>'; //255 is field ID
-	echo '</div>';
+	echo JText::sprintf('CONDATE', JHtml::_('date', $review_reply->ctime, $params->get('tmpl_core.item_time_format')));
+	echo @CobaltApi::renderField($review_reply, 255, 'list'); //255 is field ID
 }
 //end - show replies
 
@@ -137,7 +135,7 @@ $url = 'index.php?option=com_cobalt&view=form&field_id=255&type_id=3&section_id=
 
 if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id) { //10 is the group of user
 	if(@$review_reply->published = 1) {
-	echo '<a class="btn btn-primary btn-mini pull-right reply-link" rel="nofollow" href="' . JRoute::_($url) . '">' . JText::_('Reply') . '</a>';
+	echo '<a rel="nofollow" href="' . JRoute::_($url) . '">' . JText::_('Reply') . '</a>';
 	}
 }
 //end - show reply button
