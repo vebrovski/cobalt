@@ -1,3 +1,5 @@
+#Comments and reviews (with replies)
+
 I merged here several discussions about comments and reviews for [Cobalt](http://www.mintjoomla.com/joomla-components/cobalt.html) extension from [MintJoomla](http://www.mintjoomla.com).
 
 Discussions relevant to this documentation are:
