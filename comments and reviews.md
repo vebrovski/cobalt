@@ -155,7 +155,7 @@ echo JHtml::_('content.prepare', $comment);
 
 #### Replies with Cobalt - Built in comments
 
-You can also add replies with built in comments. This is something that might work (sorry, I didn't try it).
+You can also show replies with built in comments.
 
 ```
 <?php //show comment as reply
