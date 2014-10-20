@@ -117,13 +117,21 @@ But there is a kind of workaround. I will be making example for 1 reply only (ju
 To be able to add replies under list view in record you can insert this code (we will show reply button to main record author from specific group:
 ```
 <?php
-//start - show replies
+//start - get replies
 $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $query = 'SELECT * FROM #__js_res_record WHERE published = 1 AND parent_id = '.$item->id;
 $db->setQuery($query);
 $review_reply = $db->loadObject();
+//end - get replies
+//start - get reply button
+$parent = ItemsStore::getRecord($item->parent_id);
+$user = JFactory::getUser();
+$url = 'index.php?option=com_cobalt&view=form&field_id=255&type_id=3&section_id=5&fand='.$item->id.'&parent_id='.$item->id.'&return='.Url::back(); //255 is field ID, 3 is type ID, 5 is section ID, you can insert category id with &cat_id=43 where category ID is 43
+$add_reply = $db->loadResult();
+//end- get reply button
 
+//start - show replies
 if(isset($review_reply)) {
 	echo JText::sprintf('CONDATE', JHtml::_('date', $review_reply->ctime, $params->get('tmpl_core.item_time_format')));
 	echo @CobaltApi::renderField($review_reply, 255, 'list'); //255 is field ID
@@ -131,12 +139,8 @@ if(isset($review_reply)) {
 //end - show replies
 
 //start - show reply button
-$parent = ItemsStore::getRecord($item->parent_id);
-$user = JFactory::getUser();
-$url = 'index.php?option=com_cobalt&view=form&field_id=255&type_id=3&section_id=5&fand='.$item->id.'&parent_id='.$item->id.'&return='.Url::back(); //255 is field ID, 3 is type ID, 5 is section ID, you can insert category id with &cat_id=43 where category ID is 43
-
 if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id) { //10 is the group of user
-	if(@$review_reply->published = 1) {
+	if(@$add_reply->published = 1) {
 	echo '<a rel="nofollow" href="' . JRoute::_($url) . '">' . JText::_('Reply') . '</a>';
 	}
 }
