@@ -128,19 +128,18 @@ $review_reply = $db->loadObject();
 $parent = ItemsStore::getRecord($item->parent_id);
 $user = JFactory::getUser();
 $url = 'index.php?option=com_cobalt&view=form&field_id=255&type_id=3&section_id=5&fand='.$item->id.'&parent_id='.$item->id.'&return='.Url::back(); //255 is field ID, 3 is type ID, 5 is section ID, you can insert category id with &cat_id=43 where category ID is 43
-$add_reply = $db->loadResult();
 //end- get reply button
 
 //start - show replies
 if(isset($review_reply)) {
 	echo JText::sprintf('CONDATE', JHtml::_('date', $review_reply->ctime, $params->get('tmpl_core.item_time_format')));
-	echo @CobaltApi::renderField($review_reply, 255, 'list'); //255 is field ID
+	echo CobaltApi::renderField($review_reply, 255, 'list'); //255 is field ID
 }
 //end - show replies
 
 //start - show reply button
 if(in_array(10, $user->getAuthorisedGroups()) && $parent->user_id && $user->get('id') == $parent->user_id) { //10 is the group of user
-	if(@$add_reply->published = 1) {
+	if($review_reply->published == 0) {
 	echo '<a rel="nofollow" href="' . JRoute::_($url) . '">' . JText::_('Reply') . '</a>';
 	}
 }
