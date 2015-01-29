@@ -95,7 +95,7 @@ $(document).ready(function() {
     }).change();
 });
 ```
-You can also use Cobalt events [Dodumentation](http://docs.mintjoomla.com/en/cobalt/cobalt-events/)
+You can also use Cobalt events [Documentation](http://docs.mintjoomla.com/en/cobalt/cobalt-events/)
 ```php
 $_POST['jfomr']['fields'][ID] = 'text field ID';
 $_POST['jfomr']['fields'][ID] = array('select field ID', 'another value');
