@@ -81,3 +81,17 @@ List View
     Your stuff here.
 <?php endif; ?>
 ```
+
+## Save category in some other field as value
+
+```js
+$(document).ready(function() {
+    $("#jformcategory").change(function () {
+        var country = "";
+        $("select#selectfieldid option:selected").each(function () {
+            country += $(this).text() + " ";
+        });
+        $("#field_ID").val(country);
+    }).change();
+});
+```
