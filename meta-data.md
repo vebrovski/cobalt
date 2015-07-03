@@ -6,9 +6,9 @@ This is an easy way how to generate meta data from Cobalt categories, fields etc
 
 Let's look at adding meta data for records list first (this is useful only if you create custom record list templates). 
 
-Cobalt structure is made of section and it's categories. We will try to generate meta data only for categories and in section you can add it manually in administration.
+Cobalt structure is made of section and it's categories. We will try to generate meta data only for categories and in section you can add it manually through administration panel.
 
-You could also create custom template parameter to turn generating meta data on or off. You can do that by opening .xml file of your template and add something like this:
+You could also create custom template parameter to turn generating meta data on or off. You can do that by opening .xml file of your template and add something like this.
 
 ```
 <fieldset name="seo" label="SEO">
@@ -18,6 +18,7 @@ You could also create custom template parameter to turn generating meta data on 
 		</field>
 </fieldset>
 ```
+Now you must go to your template parameters to enable this option.
 
 You can now set meta with this methods:
 - `setTitle();`
@@ -28,6 +29,7 @@ For populating `string $content` we can use different options:
 - `$this->section->name`
 - `$this->category->title`
 - `$this->category->decsription`
+- ...
 
 **Example:**
 
@@ -40,7 +42,7 @@ if($params->get('tmpl_params.metadata_auto') == 1) { // checks if template param
 }
 ```
 
-you could also add records titles to keywords meta tag with foreach cycle:
+You could also add records titles to keywords meta tag with foreach cycle:
 
 ```php
 foreach ($this->items AS $item) {
@@ -53,12 +55,12 @@ endforeach;
 
 In record template it's the same principle as above but we can add some extra information to meta data with fields data.
 
-For geting field data you can use  `$item->fields_by_id[ID]->result` or `$item->fields_by_id[ID]->value[]`
+For geting field data you can use `$item->fields_by_id[ID]->result` or `$item->fields_by_id[ID]->value[]`.
 
 **Example:**
 
 ```php
 $this->document->setTitle($item->title . ' (' . $this->category->title . ') '); // item title and category title as meta title
 $this->document->setMetaData( 'description', substr($item->fields_by_id[ID]->result,0,200) . '...' ); // field data as meta description, you can use data from textarea field or html field here
-$this->document->setMetaData( 'keywords', $item->title .', '. $item->fields_by_id[26]->value['address']['city'] .', '. $this->category->title .', '. $this->section->name); //setting meta keywords
+$this->document->setMetaData( 'keywords', $item->title .', '. $item->fields_by_id[ID]->value['address']['city'] .', '. $this->category->title .', '. $this->section->name); //setting meta keywords, $item->fields_by_id[ID]->value['address']['city'] is getting values from geo field
 ```
