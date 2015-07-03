@@ -32,9 +32,9 @@ For populating `string $content` we can use different options:
 Let's look an example:
 
 ```php
-if($params->get('tmpl_params.metadata_auto') == 1) { // checks if template parameter is set to yes for creating meta data or no
+if($params->get('tmpl_params.metadata_auto') == 1) { // checks if template parameter is set to yes for creating meta data or not
 	if(JFactory::getApplication()->input->getInt('cat_id') > 0) { // checks if it is category and not section
-		$this->document->setTitle($this->category->title); // generate meta title
+		$this->document->setTitle($this->category->title); // sets category title as meta title 
 		$this->document->setMetaData( 'description', '$this->category->description'); // generate meta description from category description. Instead of $this->category->description you could use something like `substr($this->category->description,0,200) . '...'` to limit meta description to 200 characters.
 		$this->document->setMetaData( 'keywords', $this->category->title . ', ' . $this->section->name . ', ' . ' some other custom words');
 }
