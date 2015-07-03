@@ -43,7 +43,8 @@ if($params->get('tmpl_params.metadata_auto') == 1) { // checks if template param
 you could also add records titles to keywords meta tag with foreach cycle:
 
 ```php
-foreach ($this->items AS $item):
+foreach ($this->items AS $item) {
      echo $item->title;
-endforeach;
+endforeach; 
+}
 ```
