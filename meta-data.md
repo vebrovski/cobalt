@@ -4,11 +4,11 @@ This is an easy way how to generate meta data from Cobalt categories, fields etc
 
 ## Record list template
 
-Let's look at adding meta data for record list first (this is useful only if you create custom record list templates). 
+Let's look at adding meta data for records list first (this is useful only if you create custom record list templates). 
 
-Cobalt structure is made of section and it's categories. We will try to generate meta data only for categories and in section we'll add it manually.
+Cobalt structure is made of section and it's categories. We will try to generate meta data only for categories and in section you can add it manually in administration.
 
-You could also create custom template parameter to turn on or off generating of meta data. You can do that by opening .xml file of your template and add something like this:
+You could also create custom template parameter to turn generating meta data on or off. You can do that by opening .xml file of your template and add something like this:
 
 ```
 <fieldset name="seo" label="SEO">
@@ -20,14 +20,14 @@ You could also create custom template parameter to turn on or off generating of 
 ```
 
 You can now set meta with this methods:
--setTitle();
--setMetadata('description', string $content);
--setMetaData('keywords', string $content);
+- `setTitle();`
+- `setMetadata('description', string $content);`
+- `setMetaData('keywords', string $content);`
 
-For populating string $content we can use different options:
-$this->section->name
-$this->category->title
-$this->category->decsription
+For populating `string $content` we can use different options:
+- `$this->section->name`
+- `$this->category->title`
+- `$this->category->decsription`
 
 Let's look an example:
 
