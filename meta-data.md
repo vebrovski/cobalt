@@ -29,7 +29,7 @@ For populating `string $content` we can use different options:
 - `$this->category->title`
 - `$this->category->decsription`
 
-Let's look an example:
+**Example:**
 
 ```php
 if($params->get('tmpl_params.metadata_auto') == 1) { // checks if template parameter is set to yes for creating meta data or not
@@ -45,6 +45,20 @@ you could also add records titles to keywords meta tag with foreach cycle:
 ```php
 foreach ($this->items AS $item) {
      echo $item->title;
-endforeach; 
+endforeach;
 }
+```
+
+## Record template
+
+In record template it's the same principle as above but we can add some extra information to meta data with fields data.
+
+For geting field data you can use  `$item->fields_by_id[ID]->result` or `$item->fields_by_id[ID]->value[]`
+
+**Example:**
+
+```php
+$this->document->setTitle($item->title . ' (' . $this->category->title . ') '); // item title and category title as meta title
+$this->document->setMetaData( 'description', substr($item->fields_by_id[ID]->result,0,200) . '...' ); // field data as meta description, you can use data from textarea field or html field here
+$this->document->setMetaData( 'keywords', $item->title .', '. $item->fields_by_id[26]->value['address']['city'] .', '. $this->category->title .', '. $this->section->name); //setting meta keywords
 ```
